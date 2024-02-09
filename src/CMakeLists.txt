@@ -1,0 +1,19 @@
+cmake_minimum_required(VERSION 2.6)
+
+PROJECT(utils C)
+INCLUDE(GNUInstallDirs)
+ADD_DEFINITIONS(-Os -ggdb -Wall -Werror --std=gnu99 -pedantic)
+
+SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
+
+ADD_LIBRARY(utils SHARED utils.c)
+SET_TARGET_PROPERTIES(utils PROPERTIES PREFIX "")
+TARGET_LINK_LIBRARIES(utils ubox)
+INSTALL(TARGETS utils LIBRARY DESTINATION lib)
+
+SET(UCODE_SOURCES ucode.c websocket.c)
+ADD_LIBRARY(uc_device SHARED ${UCODE_SOURCES})
+FIND_LIBRARY(websockets NAMES websockets)
+SET_TARGET_PROPERTIES(uc_device PROPERTIES OUTPUT_NAME device PREFIX "")
+TARGET_LINK_LIBRARIES(uc_device ${websockets} ubox)
+INSTALL(TARGETS uc_device LIBRARY DESTINATION lib)

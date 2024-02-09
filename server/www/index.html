@@ -1,0 +1,43 @@
+<html>
+ <head>
+  <meta charset=utf-8 http-equiv="Content-Language" content="en"/>
+  <script src="/agent.js"></script>
+ </head>
+	<body>
+		<h3>Trace</h3>
+		<textarea id=trace readonly cols=120 rows=10></textarea>
+		<br>
+
+		<h3>User</h3>
+		Username: <input type="text" id=username cols=40 rows=1 value="admin"><br>
+		Password: <input type="text" id=password cols=40 rows=1 value="a"><br>
+		<button id=login>Login</button>
+		<button id=passwd>Passwd</button>
+		<br>
+
+		<h3>System</h3>
+		<button id=reboot>Reboot</button>
+		<button id=factory>Factory</button>
+		<br>
+
+		<h3>Config</h3>
+		<textarea id=config readonly cols=120 rows=10></textarea>
+		<br>
+		UUID: <input type="text" id=uuid cols=40 rows=1><br>
+		<button id=get>Get</button>
+		<button id=set>Set</button>
+		<button id=list>List</button>
+		<button id=confirm>Confirm</button>
+		<button id=apply>Apply</button>
+		<input type=checkbox id=rollback value=1>
+		<label for=rollback>Rollback</label><br>
+		<br>
+
+		<h3>Sysupgrade</h3>
+		<input type="file" id="upload" onchange="uploadFile()">
+		<button id=sysupgrade>Sysupgrade</button>
+		<button id=delete_upgrade>Delete Upgrade</button>
+
+	</body>
+</html>
+

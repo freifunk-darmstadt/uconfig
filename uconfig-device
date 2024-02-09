@@ -1,0 +1,40 @@
+#!/usr/bin/ucode
+
+'use strict';
+
+import { ulog_open, ulog, ULOG_SYSLOG, ULOG_STDIO, LOG_DAEMON } from 'log';
+import * as protocol from 'uconfig.device.protocol';
+import * as context from 'uconfig.device.context';
+import { settings } from 'uconfig.device.settings';
+import * as device from 'uconfig.device';
+import * as uloop from 'uloop';
+
+ulog_open(ULOG_SYSLOG | ULOG_STDIO, LOG_DAEMON, 'uconfig.device');
+
+global.uconfig = {
+	connect: function() {
+		printf('connect\n');
+		context.connected();
+		protocol.connect();
+	},
+
+	disconnect: function() {
+		printf('disconnect\n');
+		context.disconnected();
+		if (context.reconnect)
+			global.connection.reconnect(context.reconnect);
+	},
+
+	receive: function(msg) {
+		printf('RX: %.J\n', msg);
+	},
+};
+
+uloop.init();
+uloop.timer(30 * 1000, function() {
+	if (context.active)
+		protocol.keepalive();
+	return 30 * 1000;
+});
+global.connection = device.connect(settings.server, settings.port);
+uloop.run();
