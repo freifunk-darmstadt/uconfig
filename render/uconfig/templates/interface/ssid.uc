@@ -1,8 +1,8 @@
 {%
 	let phys = [];
 
-	for (let band in ssid.wifi_bands)
-		for (let phy in wiphy.lookup_by_band(band))
+	for (let band in ssid.wifi_radios)
+		for (let phy in wiphy.lookup(band))
 			if (phy.section)
 				push(phys, phy);
 

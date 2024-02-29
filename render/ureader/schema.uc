@@ -611,6 +611,17 @@ function instantiateRadio(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
 
+		function parseDisable(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "disable")) {
+			obj.disable = parseDisable(location + "/disable", value["disable"], errors);
+		}
+
 		function parseBand(location, value, errors) {
 			if (type(value) != "string")
 				push(errors, [ location, "must be of type string" ]);
@@ -742,26 +753,6 @@ function instantiateRadio(location, value, errors) {
 
 		if (exists(value, "valid-channels")) {
 			obj.valid_channels = parseValidChannels(location + "/valid-channels", value["valid-channels"], errors);
-		}
-
-		function parseCountry(location, value, errors) {
-			if (type(value) == "string") {
-				if (length(value) > 2)
-					push(errors, [ location, "must be at most 2 characters long" ]);
-
-				if (length(value) < 2)
-					push(errors, [ location, "must be at least 2 characters long" ]);
-
-			}
-
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			return value;
-		}
-
-		if (exists(value, "country")) {
-			obj.country = parseCountry(location + "/country", value["country"], errors);
 		}
 
 		function parseAllowDfs(location, value, errors) {
@@ -2731,14 +2722,11 @@ function instantiateInterfaceSsid(location, value, errors) {
 			obj.ssid = parseSsid(location + "/ssid", value["ssid"], errors);
 		}
 
-		function parseWifiBands(location, value, errors) {
+		function parseWifiRadios(location, value, errors) {
 			if (type(value) == "array") {
 				function parseItem(location, value, errors) {
 					if (type(value) != "string")
 						push(errors, [ location, "must be of type string" ]);
-
-					if (!(value in [ "2G", "5G", "6G" ]))
-						push(errors, [ location, "must be one of \"2G\", \"5G\" or \"6G\"" ]);
 
 					return value;
 				}
@@ -2752,8 +2740,8 @@ function instantiateInterfaceSsid(location, value, errors) {
 			return value;
 		}
 
-		if (exists(value, "wifi-bands")) {
-			obj.wifi_bands = parseWifiBands(location + "/wifi-bands", value["wifi-bands"], errors);
+		if (exists(value, "wifi-radios")) {
+			obj.wifi_radios = parseWifiRadios(location + "/wifi-radios", value["wifi-radios"], errors);
 		}
 
 		function parseBssMode(location, value, errors) {
@@ -3641,13 +3629,39 @@ function newUConfigState(location, value, errors) {
 			obj.ethernet = instantiateEthernet(location + "/ethernet", value["ethernet"], errors);
 		}
 
-		function parseRadios(location, value, errors) {
-			if (type(value) == "array") {
-				return map(value, (item, i) => instantiateRadio(location + "/" + i, item, errors));
+		function parseCountryCode(location, value, errors) {
+			if (type(value) == "string") {
+				if (length(value) > 2)
+					push(errors, [ location, "must be at most 2 characters long" ]);
+
+				if (length(value) < 2)
+					push(errors, [ location, "must be at least 2 characters long" ]);
+
 			}
 
-			if (type(value) != "array")
-				push(errors, [ location, "must be of type array" ]);
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "country-code")) {
+			obj.country_code = parseCountryCode(location + "/country-code", value["country-code"], errors);
+		}
+
+		function parseRadios(location, value, errors) {
+			if (type(value) == "object") {
+				let obj = {};
+
+				for (let name, object in value)
+					if (match(name, regexp(name)))
+						obj[name] = instantiateRadio(location + "/" + name, object, errors);
+
+				return obj;
+			}
+
+			if (type(value) != "object")
+				push(errors, [ location, "must be of type object" ]);
 
 			return value;
 		}

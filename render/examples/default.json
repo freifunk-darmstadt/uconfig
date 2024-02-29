@@ -8,20 +8,20 @@
 		"leds-active": false
         },
 
-	"radios": [
-		{
-			"band": "2G",
-			"country": "DE",
+	"country-code": "DE",
+
+	"radios": {
+		"2G": {
 			"channel-mode": "HE",
 			"channel-width": 20
-		}, {
+		},
+		"wl1": {
 			"band": "5G",
-			"country": "DE",
 			"channel-mode": "HE",
 			"channel-width": 80,
 			"channel": 36
 		}
-	],
+	},
 
 	"interfaces": {
 		"wan": {
@@ -39,8 +39,8 @@
 			"ssids": {
 				"main": {
 					"ssid": "OpenWrt",
-					"wifi-bands": [
-						"2G", "5G"
+					"wifi-radios": [
+						"2G", "wl1"
 					],
 					"bss-mode": "ap",
 					"encryption": {
@@ -78,8 +78,8 @@
 			"ssids": {
 				"nat": {
 					"ssid": "OpenWrt-NAT",
-					"wifi-bands": [
-						"2G", "5G"
+					"wifi-radios": [
+						"2G", "wl1"
 					],
 					"rate-limit": {
 						"ingress-rate": 10,

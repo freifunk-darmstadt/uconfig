@@ -80,25 +80,22 @@ export function phy_to_section(phy) {
 };
 
 /**
- * Get a list of all wireless PHYs for a specific wireless band
+ * Get a list of all wireless PHYs for a specific name/band
  *
- * @param {string} band
+ * @param {string} name
  *
  * @returns {object[]}
- * Returns an array of all wireless PHYs for a specific wireless
- * band.
+ * Returns an array of wireless PHYs
  */
-export function lookup_by_band(band) {
-	let baseband = band;
+export function lookup(name) {
 	let ret = [];
 
-	for (let idx, phy in phys) {
-		if (!(baseband in phy.band))
-			continue;
-		let sid = phy_to_section(phy.phy);
-		if (sid)
-			push(ret, { ...phy, section: sid });
-	}
+	for (let idx, phy in phys)
+		if (phy.phy == name || name in phy.band) {
+			let sid = phy_to_section(phy.phy);
+			if (sid)
+				push(ret, { ...phy, section: sid });
+		}
 
 	return ret;
 };

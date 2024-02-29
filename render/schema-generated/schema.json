@@ -22,10 +22,22 @@
                 "ethernet": {
                         "$ref": "#/$defs/ethernet"
                 },
+                "country-code": {
+                        "description": "Specifies the country code, affects the available channels and transmission powers.",
+                        "type": "string",
+                        "maxLength": 2,
+                        "minLength": 2,
+                        "examples": [
+                                "US"
+                        ]
+                },
                 "radios": {
-                        "type": "array",
-                        "items": {
-                                "$ref": "#/$defs/radio"
+                        "type": "object",
+                        "patternProperties": {
+                                ".+": {
+                                        "$ref": "#/$defs/radio",
+                                        "additionalProperties": false
+                                }
                         }
                 },
                 "interfaces": {
@@ -317,6 +329,10 @@
                         "description": "Describe a physical radio on the AP. A radio is be parent to several VAPs. They all share the same physical properties.",
                         "type": "object",
                         "properties": {
+                                "disable": {
+                                        "description": "Allow disabling the radio.",
+                                        "type": "boolean"
+                                },
                                 "band": {
                                         "description": "Specifies the wireless band to configure the radio for. Available radio device phys on the target system are matched by the wireless band given here. If multiple radio phys support the same band, the settings specified here will be applied to all of them.",
                                         "type": "string",
@@ -357,15 +373,6 @@
                                                 "maximum": 196,
                                                 "minimum": 1
                                         }
-                                },
-                                "country": {
-                                        "description": "Specifies the country code, affects the available channels and transmission powers.",
-                                        "type": "string",
-                                        "maxLength": 2,
-                                        "minLength": 2,
-                                        "examples": [
-                                                "US"
-                                        ]
                                 },
                                 "allow-dfs": {
                                         "description": "This property defines whether a radio may use DFS channels.",
@@ -1187,16 +1194,11 @@
                                         "maxLength": 32,
                                         "minLength": 1
                                 },
-                                "wifi-bands": {
-                                        "description": "The band that the SSID should be broadcasted on. The configuration layer will use the first matching band.",
+                                "wifi-radios": {
+                                        "description": "The list of radios hat the SSID should be broadcasted on. The configuration layer will use the first matching phy/band.",
                                         "type": "array",
                                         "items": {
-                                                "type": "string",
-                                                "enum": [
-                                                        "2G",
-                                                        "5G",
-                                                        "6G"
-                                                ]
+                                                "type": "string"
                                         }
                                 },
                                 "bss-mode": {

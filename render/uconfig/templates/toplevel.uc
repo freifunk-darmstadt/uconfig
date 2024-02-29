@@ -111,8 +111,8 @@
 	tryinclude('ethernet.uc', { location: '/ethernet/' });
 
 	/* render the wireless PHY configuration */
-	for (let i, radio in state.radios)
-		tryinclude('radio.uc', { location: '/radios/' + i, radio });
+	for (let phy_name, radio in state.radios)
+		tryinclude('radio.uc', { location: '/radios/' + phy_name, phy_name, radio });
 
 	/* render the logical interface configuration (includes SSIDs) */
 	function iterate_interfaces(role) {

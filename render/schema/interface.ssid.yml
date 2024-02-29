@@ -20,17 +20,13 @@ properties:
     type: string
     maxLength: 32
     minLength: 1
-  wifi-bands:
+  wifi-radios:
     description:
-      The band that the SSID should be broadcasted on. The configuration layer
-      will use the first matching band.
+      The list of radios hat the SSID should be broadcasted on. The configuration layer
+      will use the first matching phy/band.
     type: array
     items:
       type: string
-      enum:
-      - 2G
-      - 5G
-      - 6G
   bss-mode:
     description:
       Selects the operation mode of the wireless network interface controller.
