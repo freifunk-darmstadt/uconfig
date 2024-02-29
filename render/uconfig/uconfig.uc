@@ -59,12 +59,12 @@ function generate(file, verbose, test) {
 		return 0;
 
 	/* preapre the sanitized shadow config */
-	for (let cmd in [ 'rm -rf /tmp/config-shadow',
-			  'cp -r /etc/config-shadow /tmp' ])
+	for (let cmd in [ 'rm -rf /tmp/uconfig-shadow',
+			  'cp -r /etc/uconfig/shadow /tmp/uconfig-shadow' ])
 		system(cmd);
 
 	/* import the UCI batch file */
-	files.popen('/sbin/uci -q -c /tmp/config-shadow batch', batch);
+	files.popen('/sbin/uci -q -c /tmp/uconfig-shadow batch', batch);
 
 	/* write all dynamically generated files */
 	files.generate(logs);
@@ -73,9 +73,9 @@ function generate(file, verbose, test) {
 	services.stop();
 
 	/* copy generated shadow config to /etc/config/ and reload the configuration */
-	for (let cmd in [ 'uci -q -c /tmp/config-shadow commit',
-			  'cp /tmp/config-shadow/* /etc/config/',
-			  'rm -rf /tmp/config-shadow' ])
+	for (let cmd in [ 'uci -q -c /tmp/uconfig-shadow commit',
+			  'cp /tmp/uconfig-shadow/* /etc/config/',
+			  'rm -rf /tmp/uconfig-shadow' ])
 		system(cmd);
 
 	system('reload_config');
