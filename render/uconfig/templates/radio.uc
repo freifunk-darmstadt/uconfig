@@ -1,6 +1,13 @@
 {%
+	radio.phy = phy_name;
 	if (!radio.band)
 		radio.band = phy_name;
+
+	if (!(radio.band in [ '2G', '5G', '6G' ])) {
+		warn("Radio does not have a valid band");
+
+		return;
+	}
 
 	let phys = wiphy.lookup(phy_name);
 
@@ -17,7 +24,7 @@
 		let mode_weight = { HT: 1, VHT: 10, HE: 100 };
 		let wanted_mode = channel_mode + (channel_width == 8080 ? "80+80" : channel_width);
 
-		let supported_phy_modes = map(sort(map(phy.htmode, (mode) => {
+		let supported_phy_modes = map(sort(map(phy.bands[radio.band].modes, (mode) => {
 			let m = match(mode, /^([A-Z]+)(.+)$/);
 			return [ mode, mode_weight[m[1]] * (m[2] == "80+80" ? 159 : +m[2]) ];
 		}), (a, b) => (b[1] - a[1])), i => i[0]);
@@ -155,8 +162,8 @@ set wireless.{{ phy.section }}.disabled=0
 set wireless.{{ phy.section }}.uconfig_path={{ s(location) }}
 set wireless.{{ phy.section }}.htmode={{ htmode }}
 set wireless.{{ phy.section }}.channel={{ match_channel(phy, radio) }}
-set wireless.{{ phy.section }}.txantenna={{ match_mimo(phy.tx_ant, radio.mimo) }}
-set wireless.{{ phy.section }}.rxantenna={{ match_mimo(phy.rx_ant, radio.mimo) }}
+set wireless.{{ phy.section }}.txantenna={{ match_mimo(phy.antenna_tx, radio.mimo) }}
+set wireless.{{ phy.section }}.rxantenna={{ match_mimo(phy.antenna_rx, radio.mimo) }}
 set wireless.{{ phy.section }}.beacon_int={{ radio.beacon_interval }}
 set wireless.{{ phy.section }}.country={{ s(state.country_code) }}
 set wireless.{{ phy.section }}.require_mode={{ s(match_require_mode(radio.require_mode)) }}
@@ -165,6 +172,7 @@ set wireless.{{ phy.section }}.legacy_rates={{ b(radio.legacy_rates) }}
 set wireless.{{ phy.section }}.chan_bw={{ radio.bandwidth }}
 set wireless.{{ phy.section }}.maxassoc={{ radio.maximum_clients }}
 set wireless.{{ phy.section }}.acs_exclude_dfs={{ b(!radio.allow_dfs) }}
+set wireless.{{ phy.section }}.band={{ s(radio.band) }}
 set wireless.{{ phy.section }}.noscan=1
 set wireless.{{ phy.section }}.reconf=1
 {% if (radio.allow_dfs) for (let channel in radio.valid_channels): %}

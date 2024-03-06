@@ -14,19 +14,8 @@ function lookup_phys() {
 	for (let phy, data in board?.wlan) {
 		if (!data.info)
 			continue;
-		for (let k, v in data.info.bands) {
-			let p = {
-				phy,
-				band: [ k ],
-				rx_ant: data.info.antenna_rx,
-				tx_ant: data.info.antenna_tx,
-			};
-			if (v.he)
-				p.htmode = [ "HT20", "HT40", "VHT20", "VHT40", "VHT80", "HE20", "HE40", "HE80", 'HE160' ];
-			else
-				p.htmode = [ "HT20", "HT40" ];
-			push(phys, p);
-		}
+		data.info.phy = phy;
+		push(phys, data.info);
 	}
 }
 
@@ -91,7 +80,7 @@ export function lookup(name) {
 	let ret = [];
 
 	for (let idx, phy in phys)
-		if (phy.phy == name || name in phy.band) {
+		if (phy.phy == name || phy.bands[name]) {
 			let sid = phy_to_section(phy.phy);
 			if (sid)
 				push(ret, { ...phy, section: sid });
