@@ -54,7 +54,12 @@ export function delete_upgrade(connection, msg) {
 };
 
 export function info(connection, msg) {
-	return ubus.ctx.call('system', 'info');
+	let info = ubus.ctx.call('system', 'info');
+
+	for (let l = 0; l < 3; l++)
+		info.load[l] /= 65535.0;
+
+	return info;
 };
 
 export function board(connection, msg) {
