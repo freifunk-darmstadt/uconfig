@@ -8,5 +8,5 @@ import * as rpc from 'uconfig.server.rpc';
  * The UI sent a ping event
  */
 export function ping(connection, msg) {
-//	jsonrpc(connection, msg, 'pong');
+	return 0;
 };

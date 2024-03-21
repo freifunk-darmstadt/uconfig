@@ -46,37 +46,19 @@ export function get() {
 	return config;
 };
 
-export function store(connection, msg) {
+export function store(connection, msg, commit) {
 	if (pending)
 		return -1;
 
-	let config = msg.params.config;
+	let config = msg.params?.config || msg.params;
 
 	config.uuid = time();
 	ulog(LOG_INFO, `received new config with uuid: ${config.uuid}, verifying it now\n`);
 	let path = sprintf('/etc/uconfig/uconfig.cfg.%10d', config.uuid);
 	fs.writefile(path, config);
 
-	pending = true;
-	uloop.task(
-		function(pipe) {
-			let stdout = fs.popen('sleep 3');
-			let result = stdout.read("all");
-			let error = stdout.close();
-			return { result, error };
-		},
-		
-		function(res) {
-			let ret = { uuid: config.uuid };
-
-			pending = false;
-			if (res.error) {
-				fs.unlink(path);
-				ret = -1;				
-			}
-			rpc.reply(connection, msg, ret);
-		}
-	);
+	if (commit)
+		this.apply(connection, { params: { uuid: config.uuid }});
 };
 
 export function apply(connection, msg) {
@@ -126,7 +108,8 @@ export function apply(connection, msg) {
 
 			if (pending)
 				rollback_timer = uloop.timer(10000, rollback_cb);
-			rpc.reply(connection, msg, ret);
+			if (connection)
+				rpc.reply(connection, msg, ret);
 		}
 	);
 };

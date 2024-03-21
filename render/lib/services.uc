@@ -19,6 +19,7 @@ export function set_enabled(name, enable) {
 		services[name] = enable ? 'start' : 'stop';
 	else
 		services[name] = enable;
+	warn('%.J\n', services);
 };
 
 export function is_present(name) {
@@ -102,6 +103,7 @@ function set_state(state) {
 
 export function start() {
 	set_state('start');
+	set_state('reload');
 	set_state('restart');
 };
 

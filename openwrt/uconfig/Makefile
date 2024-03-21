@@ -20,7 +20,7 @@ define Package/uconfig
   CATEGORY:=Utilities
   SUBMENU:=uconfig
   TITLE:=UCI renderer
-  DEPENDS+=+ucode-mod-nl80211 +ucode-mod-rtnl +ip-full +ip-bridge +ratelimit
+  DEPENDS+=+ucode-mod-nl80211 +ucode-mod-rtnl +ip-full +ip-bridge +ratelimit +wpad-mesh-mbedtls
 endef
 
 define Package/uconfig-mod-mdns
@@ -74,8 +74,6 @@ define Package/uconfig/install
 	$(CP) $(PKG_BUILD_DIR)/render/lib/* $(1)/usr/share/ucode/uconfig
 	$(CP) $(PKG_BUILD_DIR)/render/system/*.uc $(1)/usr/libexec/uconfig
 	$(CP) $(PKG_BUILD_DIR)/render/examples $(1)/etc/uconfig
-	$(CP) $(PKG_BUILD_DIR)/render/examples/factory.json $(1)/etc/uconfig/uconfig.cfg.0000000001
-	$(LN) /etc/uconfig/uconfig.cfg.0000000001 $(1)/etc/uconfig/uconfig.active
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/render/render_config $(1)/sbin
 	$(CP) ./files-render/* $(1)
 endef
@@ -83,7 +81,7 @@ endef
 define Package/uconfig-mod-mdns/install
 	$(INSTALL_DIR) $(1)/etc/uci-defaults/ $(1)/usr/share/ucode/uconfig/templates/services/
 	$(INSTALL_DIR) $(1)/usr/share/ucode/ureader/
-	$(CP) ./modules/mdns.defaults $(1)/etc/uci-defaults/zzz-uconfig-mdns
+	$(CP) ./modules/mdns.defaults $(1)/etc/uci-defaults/uconfig-mdns
 	$(CP) $(PKG_BUILD_DIR)/render/ureader-modules/schemaServiceMdns.uc $(1)/usr/share/ucode/ureader/
 	$(CP) $(PKG_BUILD_DIR)/render/modules/mdns/* $(1)/usr/share/ucode/uconfig/templates/services/
 endef
@@ -102,6 +100,7 @@ define Package/uconfig-server/install
 	$(CP) $(PKG_BUILD_DIR)/server $(1)/usr/share/ucode/uconfig
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/src/utils.so $(1)/usr/lib/ucode/uconfig/
 	$(CP) ./files-server/* $(1)
+	$(LN) /etc/uconfig/uconfig.cfg.0000000001 $(1)/etc/uconfig/uconfig.active
 	mv $(1)/usr/share/ucode/uconfig/server/www/ $(1)/www-uconfig
 endef
 

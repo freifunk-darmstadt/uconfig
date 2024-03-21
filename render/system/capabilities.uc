@@ -4,6 +4,7 @@
 
 import * as fs from 'fs';
 import * as wiphy from 'uconfig.wiphy';
+import { uci } from 'uconfig.uci';
 
 let capa = {
 	uuid: time(),
@@ -16,7 +17,7 @@ capa.compatible = board.model.id;
 capa.model = board.model.name;
 
 capa.network = {};
-
+capa.serial = uci.get('system', '@system[-1]', 'serial');
 let macs = {};
 for (let k, v in board.network) {
 	if (!board.network.wan && k == 'lan')

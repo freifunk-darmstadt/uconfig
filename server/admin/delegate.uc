@@ -22,7 +22,7 @@ let handlers = {
 	get,
 };
 
-let admins = {};
+global.admins = {};
 
 export function onData(connection, data, final) {
 	let info = connection.info();
@@ -58,7 +58,7 @@ export function onClose(connection, code, reason) {
 	let name = `${info.peer_address}:${info.peer_port}`;
 	
 	ulog(LOG_INFO, name + ' disconnected\n'); 
-	delete admins[name];
+	delete global.admins[name];
 };
 
 function connect_cb(connection) {
@@ -89,7 +89,7 @@ export function onConnect(connection) {
 	}
 
 	connection.data().id = 1;
-	admins[name] = connection;
+	global.admins[name] = connection;
 	ulog(LOG_INFO, name + ' connected\n'); 
 	timer(1000, () => connect_cb(connection));
 

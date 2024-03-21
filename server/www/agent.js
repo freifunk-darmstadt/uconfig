@@ -194,6 +194,17 @@ function sendset()
 	}
 	document.getElementById("set").addEventListener("click", sendset);
 
+function sendsetup()
+	{
+		sendmsg({
+			uconfig: 1,
+			action: 'config',
+			method: 'wizard',
+			params: JSON.parse(document.getElementById("wizard").value)
+		});
+	}
+	document.getElementById("setup").addEventListener("click", sendsetup);
+
 function sendclients()
 	{
 		sendmsg({

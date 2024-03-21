@@ -1,0 +1,31 @@
+{
+	"uuid": 1,
+
+	"interfaces": {
+		"wan": {
+			"role": "upstream",
+			"services": [ "mdns", "ssh", "web-ui" ],
+			"ports": {
+				"wan*": "auto",
+				"lan*": "auto"
+			},
+			"ipv4": {
+				"addressing": "dynamic"
+			},
+			"ipv6": {
+				"addressing": "dynamic"
+			}
+		}
+	},
+
+	"services": {
+		"ssh": {
+			"port": 22
+		},
+		"mdns": {
+			"additional-hostnames": [
+				"setup", "config"
+			]
+		}
+	}
+}

@@ -8,6 +8,7 @@ hname=$(cat /etc/board.json  | jsonfilter -e '@.system.label_macaddr')
 [ -z "$hname" ] && hname=$(cat /sys/class/net/eth0/address)
 hname=$(echo $hname | tr -d : | awk '{print tolower($0)}')
 uci set system.@system[-1].hostname=$hname
+uci set system.@system[-1].serial=$hname
 uci set uDevice.config.serial=$hname
 
 uci commit
@@ -41,6 +42,11 @@ uci -c /etc/uconfig/shadow set system.@system[-1].hostname=$hname
 uci -c /etc/uconfig/shadow set urender.config.serial=$hname
 
 uci -c /etc/uconfig/shadow commit
+
+for default in `ls /etc/uci-defaults/uconfig-*`; do
+	. $default
+	rm $default
+done
 
 /usr/libexec/uconfig/capabilities.uc
 

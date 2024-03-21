@@ -3,6 +3,7 @@
 'use strict';
 
 import * as config from 'uconfig.server.config';
+import * as setup from 'uconfig.server.wizard';
 import * as rpc from 'uconfig.server.rpc';
 
 export function get(connection, msg) {
@@ -30,4 +31,8 @@ export function confirm() {
 
 export function rollback() {
 	return config.rollback();
+};
+
+export function wizard(connection, msg) {
+	return setup.apply(msg);
 };

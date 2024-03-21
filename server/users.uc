@@ -50,7 +50,8 @@ export function passwd(connection, username, password) {
 
 export function acl(connection, msg) {
 	if (!settings.data.configured) 
-		return (msg.action == 'action' && msg.method == 'wizard');
+		return (msg.action == 'config' && msg.method == 'wizard') ||
+		       (msg.action == 'event' && msg.method == 'ping');
 
 	if (!connection.data().username)
 		return (msg.action == 'user' && msg.method == 'authenticate');

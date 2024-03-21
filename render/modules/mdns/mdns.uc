@@ -1,15 +1,23 @@
 {%-
-	import * as ethernet from 'uconfig.ethernet';
-	import * as services from 'uconfig.services';
-
 	if (!services.is_present("umdns"))
 		return;
 
 	let interfaces = services.lookup_interfaces("mdns");
 	let enable = length(interfaces);
-	services.set_enabled("umdns", !!enable);
+	services.set_enabled("umdns", !!enable ? 'reload' : false);
 	if (!enable)
 		return;
+
+	let hosts = {
+		[ global.capabilities.serial + ".local" ]: {
+			"hostname": global.capabilities.serial + ".local"
+		}
+	};
+	for (let hostname in mdns?.additional_hostnames || [])
+		hosts[hostname + ".local"] = {
+			hostname: hostname + ".local" 
+		};
+	fs.writefile('/etc/umdns/uconfig.json', hosts);
 %}
 
 # Configure MDNS

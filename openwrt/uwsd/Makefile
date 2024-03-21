@@ -21,6 +21,7 @@ define Package/uwsd
   DEPENDS:=+libubox +ucode +libopenssl
 endef
 
+CMAKE_OPTIONS+=-DDEBUG=YES -DCMAKE_BUILD_TYPE=Debug
 EXTRA_CFLAGS=-Wno-error=unused-function
 
 define Package/uwsd/install

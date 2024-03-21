@@ -15,6 +15,7 @@ function lookup_phys() {
 		if (!data.info)
 			continue;
 		data.info.phy = phy;
+		data.info.path = data.path;
 		push(phys, data.info);
 	}
 }
@@ -53,12 +54,12 @@ export function channel_to_freq(band, channel) {
  * @returns {string|false}
  * Returns the UCI section name of a specific PHY
  */
-export function phy_to_section(phy) {
+export function phy_to_section(path) {
 	let sid = null;
 
 	cursor.load("wireless");
 	cursor.foreach("wireless", "wifi-device", (s) => {
-		if (s.phy == phy && s.scanning != 1) {
+		if (s.path == path && s.scanning != 1) {
 			sid = s['.name'];
 
 			return false;
@@ -81,7 +82,7 @@ export function lookup(name) {
 
 	for (let idx, phy in phys)
 		if (phy.phy == name || phy.bands[name]) {
-			let sid = phy_to_section(phy.phy);
+			let sid = phy_to_section(phy.path);
 			if (sid)
 				push(ret, { ...phy, section: sid });
 		}
