@@ -110,8 +110,9 @@ function generate(msg) {
 		}
 	}
 		
-	ulog(LOG_INFO, '%.J\n', cfg);
-	config.store(null, { params: cfg }, true);
+	config.store(null, { params: cfg }, (ret) => {
+		settings.configured(ret);
+	});
 }
 
 export function apply(msg) {
@@ -120,8 +121,7 @@ export function apply(msg) {
 
 	timer(2000, () => generate(msg.params));
 
-	for (let name, connection in global.admins)
-		rpc.reply(connection, { method: 'event', action: 're-configuring'});
+	rpc.broadcast(global.admins, { method: 'event', action: 're-configuring'});
 
 	return 0;
 };

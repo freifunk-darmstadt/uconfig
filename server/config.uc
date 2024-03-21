@@ -46,7 +46,7 @@ export function get() {
 	return config;
 };
 
-export function store(connection, msg, commit) {
+export function store(connection, msg, callback) {
 	if (pending)
 		return -1;
 
@@ -57,11 +57,11 @@ export function store(connection, msg, commit) {
 	let path = sprintf('/etc/uconfig/uconfig.cfg.%10d', config.uuid);
 	fs.writefile(path, config);
 
-	if (commit)
-		this.apply(connection, { params: { uuid: config.uuid }});
+	if (callback)
+		this.apply(connection, { params: { uuid: config.uuid }}, callback);
 };
 
-export function apply(connection, msg) {
+export function apply(connection, msg, callback) {
 	if (pending || !msg.params?.uuid)
 		return -1;
 
@@ -110,6 +110,8 @@ export function apply(connection, msg) {
 				rollback_timer = uloop.timer(10000, rollback_cb);
 			if (connection)
 				rpc.reply(connection, msg, ret);
+			if (callback)
+				callback(!res.error);
 		}
 	);
 };

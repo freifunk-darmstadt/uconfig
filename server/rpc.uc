@@ -7,6 +7,11 @@ function transmit(connection, data) {
 	connection.send(`${data}`);
 }
 
+export function broadcast(clients, msg) {
+	for (let name, connection in clients)
+		this.reply(connection, msg);
+};
+
 export function reply(connection, msg, params) {
 	let data = {
 		uconfig: 1,

@@ -57,7 +57,7 @@ export function info(connection, msg) {
 	let info = ubus.ctx.call('system', 'info');
 
 	for (let l = 0; l < 3; l++)
-		info.load[l] /= 65535.0;
+		info.load[l] /= 65535;
 
 	return info;
 };
