@@ -20,7 +20,7 @@ define Package/uconfig
   CATEGORY:=Utilities
   SUBMENU:=uconfig
   TITLE:=UCI renderer
-  DEPENDS+=+ucode-mod-nl80211 +ucode-mod-rtnl +ip-full +ip-bridge +ratelimit +wpad-mesh-mbedtls
+  DEPENDS+=+ucode-mod-nl80211 +ucode-mod-rtnl +ip-full +ip-bridge +wpad-mesh-mbedtls
 endef
 
 define Package/uconfig-mod-mdns
