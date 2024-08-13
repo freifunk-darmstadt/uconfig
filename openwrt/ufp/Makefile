@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ufp
-PKG_RELEASE:=1
+PKG_RELEASE:=3
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=$(PROJECT_GIT)/project/ufp.git
@@ -23,6 +23,12 @@ HOST_BUILD_DEPENDS:=ucode/host libubox/host
 PKG_BUILD_DEPENDS:=bpf-headers ufp/host
 
 CMAKE_SOURCE_SUBDIR:=src
+CMAKE_INSTALL:=1
+
+CMAKE_HOST_OPTIONS += \
+	-DCMAKE_SKIP_RPATH=FALSE \
+	-DUSE_RPATH="${STAGING_DIR_HOST}/lib" \
+	-DCMAKE_INSTALL_RPATH="${STAGING_DIR_HOST}/lib"
 
 include $(INCLUDE_DIR)/host-build.mk
 include $(INCLUDE_DIR)/package.mk
