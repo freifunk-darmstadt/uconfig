@@ -9,6 +9,8 @@ PKG_FILE_DEPENDS := $(CURDIR)/../../
 PKG_MAINTAINER:=John Crispin <john@phrozen.org>
 PKG_LICENSE:=ISC
 
+PKG_BUILD_DEPENDS:=PACKAGE_uconfig-device:libwebsockets
+
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
@@ -62,6 +64,10 @@ define Package/uconfig-device
   TITLE:=device
   DEPENDS+=+ucode-mod-log +ucode-mod-math +uconfig +libwebsockets
 endef
+
+ifneq ($(CONFIG_PACKAGE_uconfig-device),)
+  CMAKE_OPTIONS += -DUCONFIG_DEVICE=ON
+endif
 
 define Build/Prepare
 	mkdir -p $(PKG_BUILD_DIR)
