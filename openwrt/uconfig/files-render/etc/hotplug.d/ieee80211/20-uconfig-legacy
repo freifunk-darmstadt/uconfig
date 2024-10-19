@@ -1,0 +1,5 @@
+#!/bin/sh
+
+if [ ! -f /lib/wifi/mac80211.uc ]; then
+	ucode /lib/uconfig/wifi-detect.uc
+fi
