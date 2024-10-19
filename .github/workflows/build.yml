@@ -1,0 +1,93 @@
+name: Test Build
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  build:
+    name: ${{ matrix.arch }} build
+    runs-on: ubuntu-22.04
+    env:
+      OPENWRT_SDK_VERSION: 23.05.5
+    strategy:
+      matrix:
+        arch:
+          - ath79_generic
+          - ramips_mt7621
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get target names
+        id: target-names
+        run: |
+          echo "target_hyphens=$(echo ${{ matrix.arch }} | tr '_' '-')" >> "$GITHUB_OUTPUT"
+          echo "target_underscores=$(echo ${{ matrix.arch }})" >> "$GITHUB_OUTPUT"
+          echo "target_slashes=$(echo ${{ matrix.arch }} | tr '_' '/')" >> "$GITHUB_OUTPUT"
+
+      - name: Check for cached SDK
+        id: cache-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            cache
+          key: ${{ runner.os }}-sdk-${{ matrix.arch }}-${{ env.OPENWRT_SDK_VERSION }}
+      
+      - name: Unpacked cached SDK
+        if: steps.cache-restore.outputs.cache-hit == 'true'
+        run: |
+          mkdir -p $RUNNER_TEMP/build_dir
+          tar xJf "$GITHUB_WORKSPACE/cache/sdk.tar.xz" --posix -C "$RUNNER_TEMP/build_dir"
+
+      - name: Download OpenWrt SDK
+        if: steps.cache-restore.outputs.cache-hit != 'true'
+        run: |
+          wget https://downloads.openwrt.org/releases/${{ env.OPENWRT_SDK_VERSION }}/targets/${{ steps.target-names.outputs.target_slashes }}/openwrt-sdk-${{ env.OPENWRT_SDK_VERSION }}-${{ steps.target-names.outputs.target_hyphens }}_gcc-12.3.0_musl.Linux-x86_64.tar.xz
+          tar -xvf openwrt-sdk-${{ env.OPENWRT_SDK_VERSION }}-${{ steps.target-names.outputs.target_hyphens }}_gcc-12.3.0_musl.Linux-x86_64.tar.xz -C /tmp
+          mkdir -p $RUNNER_TEMP/build_dir
+          mv /tmp/openwrt-sdk-${{ env.OPENWRT_SDK_VERSION }}-${{ steps.target-names.outputs.target_hyphens }}_gcc-12.3.0_musl.Linux-x86_64/* $RUNNER_TEMP/build_dir/
+
+      - name: Copy feeds
+        run: |
+          cp $RUNNER_TEMP/build_dir/feeds.conf.default $RUNNER_TEMP/build_dir/feeds.conf
+      
+      - name: Add feeds
+        run: |
+          echo "src-link uconfig $GITHUB_WORKSPACE" >> $RUNNER_TEMP/build_dir/feeds.conf
+
+      - name: Update feeds
+        run: |
+          $RUNNER_TEMP/build_dir/scripts/feeds update -a
+          $RUNNER_TEMP/build_dir/scripts/feeds install -a
+      
+      - name: Compile Package
+        run: |
+          make defconfig -C $RUNNER_TEMP/build_dir
+          make -C $RUNNER_TEMP/build_dir package/uconfig/{clean,compile} V=s
+      
+      - name: Package SDK cache
+        if: steps.cache-restore.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p $GITHUB_WORKSPACE/cache
+          tar cJf "$GITHUB_WORKSPACE/cache/sdk.tar.xz" --posix -C "$RUNNER_TEMP" build_dir
+        
+      - name: Cache OpenWrt SDK
+        if: steps.cache-restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            cache
+          key: ${{ runner.os }}-sdk-${{ matrix.arch }}-${{ env.OPENWRT_SDK_VERSION }}
+      
+      - name: Copy packages
+        run: |
+          mv $RUNNER_TEMP/build_dir/bin $GITHUB_WORKSPACE
+
+      - name: Store packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.arch}}-packages
+          path: bin
