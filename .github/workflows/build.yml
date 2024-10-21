@@ -66,7 +66,7 @@ jobs:
       - name: Compile Package
         run: |
           make defconfig -C $RUNNER_TEMP/build_dir
-          make -C $RUNNER_TEMP/build_dir package/uconfig/{clean,compile} V=s
+          make -C $RUNNER_TEMP/build_dir package/uconfig/{clean,compile} V=s -j$(nproc)
       
       - name: Package SDK cache
         if: steps.cache-restore.outputs.cache-hit != 'true'
