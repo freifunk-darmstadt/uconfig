@@ -39,8 +39,7 @@ jobs:
       - name: Unpacked cached SDK
         if: steps.cache-restore.outputs.cache-hit == 'true'
         run: |
-          mkdir -p $RUNNER_TEMP/build_dir
-          tar xJf "$GITHUB_WORKSPACE/cache/sdk.tar.xz" --posix -C "$RUNNER_TEMP/build_dir"
+          tar xJf "$GITHUB_WORKSPACE/cache/sdk.tar.xz" --posix -C "$RUNNER_TEMP"
 
       - name: Download OpenWrt SDK
         if: steps.cache-restore.outputs.cache-hit != 'true'
